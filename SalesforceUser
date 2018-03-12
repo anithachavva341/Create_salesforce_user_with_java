@@ -1,0 +1,74 @@
+package com.anwesh_Sfdc;
+
+import com.sforce.soap.partner.Connector;
+import com.sforce.soap.partner.PartnerConnection;
+import com.sforce.soap.partner.QueryResult;
+import com.sforce.soap.partner.SaveResult;
+import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.ConnectionException;
+import com.sforce.ws.ConnectorConfig;
+
+import com.sforce.soap.partner.sobject.*;
+import com.sforce.soap.partner.*;
+import com.sforce.soap.*;
+import com.sforce.*;
+
+public class SalesforceUser {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+
+		ConnectorConfig config = new ConnectorConfig();
+		config.setUsername("anwesh@sfdc.com");
+		config.setPassword("force@12szhb9FrnJgCjth3ndnGdcLoQ");
+
+		PartnerConnection connection = null;
+
+		try {
+			SObject user = new SObject();
+
+			user.setType("User");
+
+			user.setField("Alias", "AnS");
+			user.setField("DefaultGroupNotificationFrequency", "P");
+			user.setField("DigestFrequency", "D");
+			user.setField("Email", "konda@info.com");
+			user.setField("EmailEncodingKey", "ISO-8859-1");
+			user.setField("LanguageLocaleKey", "English");
+			user.setField("LastName", "Mithuna");
+			user.setField("LocaleSidKey", "En");
+			user.setField("TimeZoneSidKey", "America/Los_Angeles");
+			user.setField("Username", "Mithuna@info.com");
+			user.setField("UserPermissionsCallCenterAutoLogin", "true");
+			user.setField("UserPermissionsMarketingUser", "true");
+			user.setField("UserPermissionsOfflineUser", "true");
+			user.setField("LanguageLocaleKey", "en_US");
+			user.setField("LocaleSidKey", "en_US");
+			user.setField("ProfileId", "cccccccccc");
+
+			//System.out.println("Created user: " + [0]);
+			connection = Connector.newConnection(config);
+			SaveResult[] results = connection.create(new SObject[] { user });
+			if (results[0].isSuccess())
+			    System.out.println("Created user: " + results[0].getId());
+			else
+			    System.out.println("Error: " + results[0].getErrors()[0].getStatusCode() + 
+			                       ":" + results[0].getErrors()[0].getMessage());
+			
+				QueryResult queryResults = connection
+					.query("SELECT Id, Name from User "
+							+ "ORDER BY CreatedDate DESC LIMIT 5");
+			if (queryResults.getSize() > 0) {
+				for (SObject s : queryResults.getRecords()) {
+		 			System.out.println("Id: " + s.getField("Id") + " - Name: "
+							+ s.getField("Name"));
+				}
+			}
+
+		} catch (ConnectionException ce) {
+			ce.printStackTrace();
+		}
+	}
+}
